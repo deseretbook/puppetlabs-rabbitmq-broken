@@ -110,3 +110,4 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
   end
 
 end
+
