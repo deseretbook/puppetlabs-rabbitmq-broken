@@ -7,3 +7,6 @@ spec/fixtures/
 coverage/
 .idea/
 *.iml
+.rspec_system
+.vagrant
+.*sw*
