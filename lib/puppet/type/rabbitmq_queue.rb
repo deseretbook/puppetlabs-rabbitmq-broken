@@ -1,5 +1,5 @@
 Puppet::Type.newtype(:rabbitmq_queue) do
-  desc 'Native type for managing rabbitmq queue'
+  desc 'Native type for managing rabbitmq queues'
 
   ensurable do
     defaultto(:present)
