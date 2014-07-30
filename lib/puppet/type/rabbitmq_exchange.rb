@@ -13,7 +13,32 @@ Puppet::Type.newtype(:rabbitmq_exchange) do
 
   newparam(:name, :namevar => true) do
     desc 'Name of exchange'
-    newvalues(/^\S*@\S+$/)
+    defaultto('DEFAULT_NAME')
+  end
+
+  newparam(:vhost) do
+    desc 'Vhost of exchange. Defaults to /. Set *on creation*'
+    defaultto('/')
+  end
+
+  newparam(:exchange_name) do
+    desc 'Name of exchange. Set *on creation*'
+    newvalues(/^((?!\s\s).)+$/)
+  end
+
+  newparam(:unique_name) do
+    desc 'Unique name of exchange. It is built on the fly from other fields!'
+    defaultto('DEFAULT_NAME')
+
+    validate do |unique_name|
+      unless unique_name == 'DEFAULT_NAME'
+        raise ArgumentError, 'unique_name field should not be populated in manifest - it is built on the fly from other fields!'
+      end
+    end
+
+    munge do |unique_name|
+      unique_name = resource[:exchange_name] + '@' + resource[:vhost]
+    end
   end
 
   newparam(:type) do

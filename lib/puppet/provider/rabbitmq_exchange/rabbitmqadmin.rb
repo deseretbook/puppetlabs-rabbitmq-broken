@@ -15,13 +15,8 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
   end
   defaultfor :feature => :posix
 
-  def should_vhost
-    if @should_vhost
-      @should_vhost
-    else
-      @should_vhost = resource[:name].split('@')[1]
-    end
-  end
+  # these :arguments fields must be integers in command
+  EXCHANGE_INT_FIELDS=['x-max-hops']
 
   def self.all_vhosts
     vhosts = []
@@ -80,15 +75,33 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
 
   def self.prefetch(resources)
     packages = instances
+    packages.each do |pkge|
+      Puppet.debug pkge.name
+    end
     resources.keys.each do |name|
-      if provider = packages.find{ |pkg| pkg.name == name }
+      Puppet.debug resources[name][:unique_name]
+      if provider = packages.find{ |pkg| pkg.name == resources[name][:unique_name] }
         resources[name].provider = provider
       end
     end
+    resources
   end
 
   def exists?
     @property_hash[:ensure] == :present
+  end
+
+  def clean_arguments
+    # some fields must be integers etc.
+    args = resource[:arguments]
+    unless args.empty?
+      EXCHANGE_INT_FIELDS.each do |field|
+        if args.has_key?(field)
+          args[field] = args[field].to_i
+        end
+      end
+    end
+    args
   end
 
   def create
