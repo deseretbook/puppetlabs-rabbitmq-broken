@@ -87,7 +87,7 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
     @property_hash[:ensure] == :present
   end
 
-  def clean_arguments
+  def self.clean_arguments
     # some fields must be integers etc.
     args = resource[:arguments]
     unless args.empty?
