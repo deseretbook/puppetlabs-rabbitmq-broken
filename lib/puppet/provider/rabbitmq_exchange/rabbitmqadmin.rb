@@ -75,11 +75,7 @@ Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin, :parent => Puppet:
 
   def self.prefetch(resources)
     packages = instances
-    packages.each do |pkge|
-      Puppet.debug pkge.name
-    end
     resources.keys.each do |name|
-      Puppet.debug resources[name][:unique_name]
       if provider = packages.find{ |pkg| pkg.name == resources[name][:unique_name] }
         resources[name].provider = provider
       end
