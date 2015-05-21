@@ -17,11 +17,6 @@ describe Puppet::Type.type(:rabbitmq_policy) do
     @policy[:name].should == 'ha-all@/'
   end
 
-  it 'should require a name' do
-    expect {
-      Puppet::Type.type(:rabbitmq_policy).new({})
-    }.to raise_error(Puppet::Error, 'Title or name must be provided')
-  end
 
   it 'should fail when name does not have a @' do
     expect {
@@ -115,5 +110,46 @@ describe Puppet::Type.type(:rabbitmq_policy) do
     expect {
       @policy[:definition] = definition
     }.to raise_error(Puppet::Error, /Invalid expires value.*future/)
+=======
+  it 'should not allow whitespace in the name' do
+    expect {
+      @policy[:name] = 'b r'
+    }.to raise_error(Puppet::Error, /Valid values match/)
+  end
+  it 'should not allow whitespace in the vhost' do
+    expect {
+      @policy[:vhost] = 'b r'
+    }.to raise_error(Puppet::Error, /Valid values match/)
+  end
+  it 'should not allow a non-digit values for priority' do
+    expect {
+      @policy[:priority] = 'foo'
+    }.to raise_error(Puppet::Error, /Valid values match/)
+  end
+  it 'should not allow an unknown value for apply_to' do
+    expect {
+      @policy[:apply_to] = 'nothing'
+    }.to raise_error(Puppet::Error, /Invalid value/)
+  end
+  it 'should not allow a non-Hash values for definition' do
+    expect {
+      @policy[:definition] = 'foo'
+    }.to raise_error(Puppet::Error, /must be a non-empty Hash/)
+  end
+  it 'should not allow an empty Hash value for definition' do
+    expect {
+      @policy[:definition] = {}
+    }.to raise_error(Puppet::Error, /must be a non-empty Hash/)
+  end
+  it "should autorequire rabbitmq_vhost" do
+    vhost = Puppet::Type.type(:rabbitmq_vhost).new(:name => "myvhost")
+    depend  = Puppet::Type.type(:rabbitmq_policy).new(:name => 'foo', :vhost => 'myvhost')
+    config = Puppet::Resource::Catalog.new :testing do |conf|
+      [vhost, depend].each { |resource| conf.add_resource resource }
+    end
+    rel = depend.autorequire[0]
+    rel.source.ref.should == vhost.ref
+    rel.target.ref.should == depend.ref
+>>>>>>> origin/master
   end
 end

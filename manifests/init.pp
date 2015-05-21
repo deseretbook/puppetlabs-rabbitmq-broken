@@ -234,5 +234,11 @@ class rabbitmq(
 
   # Make sure the various providers have their requirements in place.
   Class['::rabbitmq::install'] -> Rabbitmq_plugin<| |>
-
+  Class['::rabbitmq::service'] -> Rabbitmq_vhost<| |>
+  Class['::rabbitmq::service'] -> Rabbitmq_parameter<| |>
+  Class['::rabbitmq::service'] -> Rabbitmq_policy<| |>
+  Class['::rabbitmq::service'] -> Rabbitmq_federation_upstream<| |>
+  Class['::rabbitmq::service'] -> Rabbitmq_federation_upstreamset<| |>
+  
 }
+
